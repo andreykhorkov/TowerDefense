@@ -5,7 +5,12 @@ public class PooledBattleElement : PoolObject
 {
     public BattleRoot BattleRoot { get; private set; }
 
-    private void Start()
+    private void Awake()
+    {
+        Initialize();
+    }
+
+    protected virtual void Initialize()
     {
         BattleRoot = FindObjectOfType<BattleRoot>();
     }
