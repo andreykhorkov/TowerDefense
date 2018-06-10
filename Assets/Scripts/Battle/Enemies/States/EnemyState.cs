@@ -2,9 +2,9 @@
 {
     public abstract class EnemyState
     {
-        protected Enemy enemy;
+        protected EnemyController enemy;
 
-        protected EnemyState(Enemy enemy)
+        protected EnemyState(EnemyController enemy)
         {
             this.enemy = enemy;
         }

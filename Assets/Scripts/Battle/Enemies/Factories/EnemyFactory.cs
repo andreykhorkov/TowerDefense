@@ -2,5 +2,5 @@
 
 public abstract class EnemyFactory
 {
-    public abstract Enemy SpawnEnemy();
+    public abstract EnemyController SpawnEnemy();
 }

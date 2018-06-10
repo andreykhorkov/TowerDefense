@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+﻿using Battle;
+using UnityEngine;
 
-public class TurretController : MonoBehaviour
+public class TurretController : BattleElement
 {
 
     [SerializeField] private Transform cannon;
