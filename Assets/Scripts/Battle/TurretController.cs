@@ -8,11 +8,12 @@ public class TurretController : BattleElement
 
     [SerializeField] private Transform cannon;
     [SerializeField, Tooltip("degrees/sec")] private float maxTurretRotationSpeed = 360;
-    [Header("20th part of levelBounds side")]
+    [Header("20th part of levelBounds side")] [SerializeField, Range(0.1f, 3f)] private float enemyFindingDelay = 1;
     [SerializeField, Range(1, 10)] private float targetingRadiusFraction = 5;
     [SerializeField, Range(0.2f, 0.8f), Tooltip("msec")] private float fireDelay = 0.5f;
     [SerializeField, AssetPathGetter] private string projectileAssetPath;
     [SerializeField] private Transform shootPoint;
+    [SerializeField] private Transform towerBottom;
     [SerializeField] private ProjectileParams projectileParams;
 
     private EnemyController target;
@@ -20,10 +21,11 @@ public class TurretController : BattleElement
     private float levelHalfWidth;
     private int enemyLayerMask;
     private Collider[] colsWithinTargetingRadius = new Collider[100];
-    private Vector3 turretPosition;
+    private Vector3 towerBottomPosition;
     private Vector3 targetDirection;
     private PeriodicTask choosingTarget;
     private bool isWeaponReady = true;
+    private float targetingRadius;
 
     public ProjectileParams ProjectileParams { get { return projectileParams; } }
 
@@ -44,9 +46,9 @@ public class TurretController : BattleElement
 
         battleController = BattleRoot.BattleController;
         levelHalfWidth = battleController.LevelMesh.mesh.bounds.size.x*battleController.LevelMesh.transform.lossyScale.x;
-        enemyLayerMask = LayerMask.GetMask("Enemy");
-        turretPosition = transform.position;
-        choosingTarget = new PeriodicTask(ChooseTarget, battleController.EnemySpawnDelay * 0.5f);
+        enemyLayerMask |= 1 << LayerMask.NameToLayer("Enemy");
+        towerBottomPosition = towerBottom.transform.position;
+        choosingTarget = new PeriodicTask(ChooseTarget, enemyFindingDelay);
 
         PoolManager.PreWarm<Projectile>(projectileAssetPath, 2);
         EnemyController.EnemyDestroyed += OnEnemyDestroyed;
@@ -54,28 +56,23 @@ public class TurretController : BattleElement
 
     private void Fire()
     {
-        if (target != null)
-        {
-            var projectile = PoolManager.GetObject<Projectile>(projectileAssetPath);
-            projectile.SetOrientation(shootPoint.position, Quaternion.identity);
-            projectile.Throw(targetDirection);
-        }
-
-        ChooseTarget();
+        var projectile = PoolManager.GetObject<Projectile>(projectileAssetPath);
+        projectile.SetOrientation(shootPoint.position, Quaternion.identity);
+        projectile.Throw(targetDirection);
 
         StartCoroutine(Reloading());
     }
 
     private void ChooseTarget()
     {
-        var targetingRadius = levelHalfWidth * targetingRadiusFraction/20;
+        targetingRadius = levelHalfWidth * targetingRadiusFraction/20;
 
-        if (!Physics.CheckSphere(turretPosition, targetingRadius, enemyLayerMask))
+        if (!Physics.CheckSphere(towerBottomPosition, targetingRadius, enemyLayerMask))
         {
             return;
         }
 
-        var numColsFound = Physics.OverlapSphereNonAlloc(turretPosition, targetingRadius, colsWithinTargetingRadius, enemyLayerMask);
+        var numColsFound = Physics.OverlapSphereNonAlloc(towerBottomPosition, targetingRadius, colsWithinTargetingRadius, enemyLayerMask);
         target = GetFurthestEnemy(numColsFound);
     }
 
@@ -87,7 +84,7 @@ public class TurretController : BattleElement
         for (int i = 0; i < numColsFound; i++)
         {
             var col = colsWithinTargetingRadius[i];
-            var dist = (turretPosition - col.transform.position).sqrMagnitude;
+            var dist = Vector3.SqrMagnitude(towerBottomPosition - col.transform.position);
 
             if (dist > furthestDist)
             {
@@ -103,6 +100,12 @@ public class TurretController : BattleElement
     {
         if (ReferenceEquals(target, null))
         {
+            return;
+        }
+
+        if (Vector3.Distance(target.transform.position, towerBottomPosition) > targetingRadius)
+        {
+            target = null;
             return;
         }
 
@@ -168,5 +171,8 @@ public class TurretController : BattleElement
     {
         Gizmos.color = Color.red;
         Gizmos.DrawRay(cannon.transform.position, targetDirection*20);
+
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawRay(towerBottomPosition, transform.forward * targetingRadius);
     }
 }

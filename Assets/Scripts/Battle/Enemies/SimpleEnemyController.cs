@@ -5,8 +5,8 @@
         get { return "Tank"; }
     }
 
-    public override void Move()
+    public override EnemyType EnemyType
     {
-        
+        get { return EnemyType.simple; }
     }
 }

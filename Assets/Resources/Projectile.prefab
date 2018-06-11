@@ -60,7 +60,7 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RenderingLayerMask: 4294967295
   m_Materials:
-  - {fileID: 2100000, guid: b47cf91f8af34ee449f6a1dd7f9c8a8a, type: 2}
+  - {fileID: 2100000, guid: 098ee589b29efda44a719ddd16246bab, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -214,6 +214,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   projectileParams: {fileID: 11400000, guid: 2d2a37f42b92ab741ac1ee90ce54284e, type: 2}
+  explosionAssetPath: Effects/Second_explosion
 --- !u!135 &135453115934044620
 SphereCollider:
   m_ObjectHideFlags: 1

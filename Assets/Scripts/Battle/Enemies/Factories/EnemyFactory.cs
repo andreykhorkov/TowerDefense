@@ -12,6 +12,6 @@ public abstract class EnemyFactory : BattleElement
     {
         base.Initialize();
 
-        PoolManager.PreWarm<EnemyController>(enemyAssetPath, 50);
+        PoolManager.PreWarm<EnemyController>(enemyAssetPath, 20);
     }
 }

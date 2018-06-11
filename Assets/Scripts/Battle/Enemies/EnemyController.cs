@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using Pool;
 using UnityEngine;
 using UnityEngine.AI;
@@ -8,13 +7,22 @@ using VFX;
 public class EnemyArgs : EventArgs
 {
     public int Id { get; private set; }
+    public EnemyType EnemyType { get; private set; }
 
-    public EnemyArgs(int id)
+    public EnemyArgs(int id, EnemyType enemyType)
     {
         Id = id;
+        EnemyType = enemyType;
     }
 }
 
+public enum EnemyType
+{
+    simple,
+    advanced
+}
+
+// a bit overkill for now since both nested enemy classes are pretty much the same
 public abstract class EnemyController : PooledBattleElement
 {
     [SerializeField] protected EnemyParams enemyParams;
@@ -28,6 +36,8 @@ public abstract class EnemyController : PooledBattleElement
     protected int health;
 
     public abstract string VehicleName { get; }
+
+    public abstract EnemyType EnemyType { get; }
 
     public int Id { get; private set; }
 
@@ -45,16 +55,6 @@ public abstract class EnemyController : PooledBattleElement
         }
     }
 
-    private void OnTriggerEnter(Collider collider)
-    {
-        if (collider.gameObject.layer == BattleController.ProjectileLayer)
-        {
-            var explosion = PoolManager.GetObject<ParticleEffect>(explosionAssetPath);
-            explosion.SetOrientation(collider.transform.position, Quaternion.identity);
-            explosion.Play();
-        }
-    }
-
     private void OnTakesDamage(object sender, HitArgs args)
     {
         if (collider != args.Collider)
@@ -67,19 +67,13 @@ public abstract class EnemyController : PooledBattleElement
 
         if (health <= 0)
         {
-            ReturnObject();
-            EnemyDestroyed(this, new EnemyArgs(Id));
-        }
-    }
+            var explosion = PoolManager.GetObject<ParticleEffect>(explosionAssetPath);
+            explosion.SetOrientation(transform.position, Quaternion.identity);
+            explosion.Play();
 
-    private void TakeDamage(int damage)
-    {
-        health -= damage;
-
-        if (health <= 0)
-        {
             ReturnObject();
-            EnemyDestroyed(this, new EnemyArgs(Id));
+            EnemyDestroyed(this, new EnemyArgs(Id, EnemyType));
+            BattleRoot.BattleController.BattleStats.CountFrag(EnemyType);
         }
     }
 
@@ -94,19 +88,18 @@ public abstract class EnemyController : PooledBattleElement
         PoolManager.PreWarm<ParticleEffect>(explosionAssetPath, 5);
         Projectile.HitEnemyHandler += OnTakesDamage;
 
-        EnemyInstantiated(this, new EnemyArgs(Id));
+        EnemyInstantiated(this, new EnemyArgs(Id, EnemyType));
     }
 
     public override void OnTakenFromPool()
     {
         health = enemyParams.DefaultHealth;
+        gameObject.layer = BattleController.EnemyLayer;
     }
 
-    public IEnumerator SetGoalDestination()
+    public void SetGoalDestination()
     {
         navMeshAgent.enabled = true;
-        yield return null;
-        yield return null;
         navMeshAgent.ResetPath();
         navMeshAgent.SetDestination(BattleController.GoalPosition);
     }
@@ -118,21 +111,17 @@ public abstract class EnemyController : PooledBattleElement
 
     public override void OnReturnedToPool()
     {
+        HelpTools.ChangeLayersRecursively(transform, BattleController.PoolLayer);
         SetOrientation(BattleController.PooledPosition, Quaternion.identity);
         navMeshAgent.enabled = false;
-        EnemyDestroyed(this, new EnemyArgs(Id));
+        EnemyDestroyed(this, new EnemyArgs(Id, EnemyType));
     }
 
     public override void OnPreWarmed()
     {
         SetOrientation(BattleController.PooledPosition, Quaternion.identity);
         navMeshAgent.enabled = false;
-    }
-
-    public abstract void Move();
-
-    public virtual void Update()
-    {
+        gameObject.layer = BattleController.PoolLayer;
     }
 
     void OnDestroy()

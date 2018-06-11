@@ -9,5 +9,6 @@ namespace Battle
 
         public BattleController BattleController { get { return battleController; } }
         public EnemySpawnController EnemySpawnController { get { return enemySpawnController; } }
+       
     }
 }

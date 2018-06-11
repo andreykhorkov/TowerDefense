@@ -432,7 +432,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyParams: {fileID: 11400000, guid: b7a08c7e2bce0ab40b111d38821d9b3d, type: 2}
   projectileParams: {fileID: 11400000, guid: 2d2a37f42b92ab741ac1ee90ce54284e, type: 2}
-  explosionAssetPath: Simple_explosion
+  explosionAssetPath: Effects/Simple_explosion
 --- !u!195 &195207894167935480
 NavMeshAgent:
   m_ObjectHideFlags: 1

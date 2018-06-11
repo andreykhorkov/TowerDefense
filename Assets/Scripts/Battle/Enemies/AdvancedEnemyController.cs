@@ -5,7 +5,8 @@
         get { return "Car"; }
     }
 
-    public override void Move()
+    public override EnemyType EnemyType
     {
+        get { return EnemyType.advanced; }
     }
 }

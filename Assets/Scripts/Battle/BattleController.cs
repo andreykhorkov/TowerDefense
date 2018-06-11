@@ -16,11 +16,15 @@ public class BattleController : BattleElement
     private PeriodicTask decreasingEnemySpawnDelay;
     private float additionSpeed;
 
+    public BattleStats BattleStats { get; private set; }
+
     public static int EnemyLayer { get; private set; }
 
     public static int LevelBoundsLayer { get; private set; }
 
     public static int ProjectileLayer { get; private set; }
+
+    public static int PoolLayer { get; private set; }
 
     public static Vector3 PooledPosition { get; private set; }
     
@@ -43,7 +47,7 @@ public class BattleController : BattleElement
     {
         var enemy = enemySpawnController.SpawnEnemy();
         enemy.AddSpeed(additionSpeed);
-        StartCoroutine(enemy.SetGoalDestination());
+        enemy.SetGoalDestination();
     }
 
     private void Complication()
@@ -81,6 +85,9 @@ public class BattleController : BattleElement
         EnemyController.EnemyInstantiated += OnEnemyInstantiated;
         LevelBoundsLayer = LayerMask.NameToLayer("LevelBounds");
         ProjectileLayer = LayerMask.NameToLayer("Projectile");
+        PoolLayer = LayerMask.NameToLayer("Pool");
         EnemyLayer = LayerMask.NameToLayer("Enemy");
+
+        BattleStats = new BattleStats();
     }
 }

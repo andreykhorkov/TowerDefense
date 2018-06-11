@@ -9,8 +9,6 @@ public class EnemySpawnController : BattleElement
     [SerializeField] private Transform rightWing;
     [SerializeField] private EnemyFactory simpleEnemyFactory;
     [SerializeField] private EnemyFactory advancedEnemyFactory;
-
-    private EnemyFactory currentEnemyFactory;
     private Vector3 startLine;
 
     protected override void Initialize()
@@ -22,7 +20,9 @@ public class EnemySpawnController : BattleElement
 
     public EnemyController SpawnEnemy()
     {
-        var enemy = simpleEnemyFactory.SpawnEnemy();
+        var currentEnemyFactory = Random.Range(0, 100) > 50 ? simpleEnemyFactory : advancedEnemyFactory;
+
+        var enemy = currentEnemyFactory.SpawnEnemy();
         enemy.transform.position = leftWing.position + startLine.normalized * Random.Range(0, startLine.magnitude);
         return enemy;
     }

@@ -1,6 +1,8 @@
 ﻿using System;
+using Pool;
 using Projectiles;
 using UnityEngine;
+using VFX;
 
 public class HitArgs : EventArgs
 {
@@ -15,6 +17,7 @@ public class HitArgs : EventArgs
 public class Projectile : PooledBattleElement
 {
     [SerializeField] private ProjectileParams projectileParams;
+    [SerializeField, AssetPathGetter] private string explosionAssetPath;
 
     private SphereCollider sphereCollider;
     private TrailRenderer trailRenderer;
@@ -40,6 +43,7 @@ public class Projectile : PooledBattleElement
 
     public override void OnReturnedToPool()
     {
+        HelpTools.ChangeLayersRecursively(transform, BattleController.PoolLayer);
         sphereCollider.enabled = false;
         trailRenderer.enabled = false;
         SetOrientation(BattleController.PooledPosition, Quaternion.identity);
@@ -61,6 +65,7 @@ public class Projectile : PooledBattleElement
     {
         sphereCollider.enabled = true;
         trailRenderer.enabled = true;
+        gameObject.layer = BattleController.ProjectileLayer;
     }
 
     public void Throw(Vector3 dir)
@@ -76,11 +81,17 @@ public class Projectile : PooledBattleElement
 
     void OnTriggerEnter(Collider collider)
     {
-        if (collider.gameObject.layer == BattleController.EnemyLayer)
+        if (collider.gameObject.layer != BattleController.EnemyLayer)
         {
-            ReturnObject();
-            HitEnemyHandler(this, new HitArgs(collider));
+            return;
         }
+
+        ReturnObject();
+        HitEnemyHandler(this, new HitArgs(collider));
+
+        var explosion = PoolManager.GetObject<ParticleEffect>(explosionAssetPath);
+        explosion.SetOrientation(collider.transform.position, Quaternion.identity);
+        explosion.Play();
     }
 
     void OnTriggerExit(Collider collider)
