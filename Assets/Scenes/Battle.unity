@@ -2796,7 +2796,7 @@ MonoBehaviour:
   maxTurretRotationSpeed: 1000
   targetingRadiusFraction: 5
   fireDelay: 0.5
-  enemyFindingDelay: 0.25
+  enemyFindingDelay: 0.5
   projectileAssetPath: Projectile
   shootPoint: {fileID: 1954084070}
   towerBottom: {fileID: 131511538}
