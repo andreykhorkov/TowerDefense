@@ -1,8 +1,21 @@
-﻿using Projectiles;
+﻿using System;
+using Projectiles;
 using UnityEngine;
+
+public class HitArgs : EventArgs
+{
+    public Collider Collider { get; private set; }
+
+    public HitArgs(Collider collider)
+    {
+        Collider = collider;
+    }
+}
 
 public class Projectile : PooledBattleElement
 {
+    [SerializeField] private ProjectileParams projectileParams;
+
     private SphereCollider sphereCollider;
     private TrailRenderer trailRenderer;
     private IdleState idleState;
@@ -10,7 +23,9 @@ public class Projectile : PooledBattleElement
     private ProjectileState currentState;
     private Vector3 throwDirection;
 
-    [SerializeField] private ProjectileParams projectileParams;
+    public static event EventHandler<HitArgs> HitEnemyHandler = delegate { };
+
+    public ProjectileParams ProjectileParams { get { return projectileParams; } }
 
     protected override void Initialize()
     {
@@ -64,6 +79,7 @@ public class Projectile : PooledBattleElement
         if (collider.gameObject.layer == BattleController.EnemyLayer)
         {
             ReturnObject();
+            HitEnemyHandler(this, new HitArgs(collider));
         }
     }
 

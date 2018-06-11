@@ -2272,11 +2272,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cannon: {fileID: 958616816}
-  maxTurretRotationSpeed: 360
+  maxTurretRotationSpeed: 1000
   targetingRadiusFraction: 5
   fireDelay: 0.5
   projectileAssetPath: Projectile
   shootPoint: {fileID: 1954084070}
+  projectileParams: {fileID: 11400000, guid: 2d2a37f42b92ab741ac1ee90ce54284e, type: 2}
 --- !u!65 &1042301664
 BoxCollider:
   m_ObjectHideFlags: 0

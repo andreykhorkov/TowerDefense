@@ -11,5 +11,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2176d2dc9aeaf441a39929d68ac9797, type: 3}
   m_Name: SimpleEnemyParams
   m_EditorClassIdentifier: 
-  defaultSpeed: 5
+  defaultSpeed: 3
   defaultHealth: 100

@@ -1,7 +1,7 @@
-﻿using Battle;
+﻿using System.Collections;
+using Battle;
 using Pool;
 using UnityEngine;
-using VFX;
 
 public class TurretController : BattleElement
 {
@@ -22,15 +22,20 @@ public class TurretController : BattleElement
     private Collider[] colsWithinTargetingRadius = new Collider[100];
     private Vector3 turretPosition;
     private Vector3 targetDirection;
-    private PeriodicTask shootingTask;
+    private PeriodicTask choosingTarget;
+    private bool isWeaponReady = true;
 
     public ProjectileParams ProjectileParams { get { return projectileParams; } }
 
     void Update()
     {
         Aiming();
+        choosingTarget.TryExecute();
+    }
 
-        shootingTask.TryExecute();
+    void OnDestroy()
+    {
+        EnemyController.EnemyDestroyed -= OnEnemyDestroyed;
     }
 
     protected override void Initialize()
@@ -41,11 +46,10 @@ public class TurretController : BattleElement
         levelHalfWidth = battleController.LevelMesh.mesh.bounds.size.x*battleController.LevelMesh.transform.lossyScale.x;
         enemyLayerMask = LayerMask.GetMask("Enemy");
         turretPosition = transform.position;
-
-        shootingTask = new PeriodicTask(Fire, fireDelay);
+        choosingTarget = new PeriodicTask(ChooseTarget, battleController.EnemySpawnDelay * 0.5f);
 
         PoolManager.PreWarm<Projectile>(projectileAssetPath, 2);
-        
+        EnemyController.EnemyDestroyed += OnEnemyDestroyed;
     }
 
     private void Fire()
@@ -58,6 +62,8 @@ public class TurretController : BattleElement
         }
 
         ChooseTarget();
+
+        StartCoroutine(Reloading());
     }
 
     private void ChooseTarget()
@@ -107,27 +113,60 @@ public class TurretController : BattleElement
         var correctedDirection = dir + correction;
 
         targetDirection = correctedDirection.normalized;
-        
-        
 
         AimTurret();
         AimCannon();
+
+        var isTargetAimed = HelpTools.Approximately(Vector3.Dot(targetDirection, cannon.transform.forward), 1, 0.001f);
+
+        if (isTargetAimed && isWeaponReady)
+        {
+            Fire();
+        }
+    }
+
+    private void OnEnemyDestroyed(object sender, EnemyArgs args)
+    {
+        if (target != null && args.Id == target.Id)
+        {
+            target = null;
+        }
+    }
+
+    private IEnumerator Reloading()
+    {
+        isWeaponReady = false;
+        yield return new WaitForSeconds(fireDelay);
+        isWeaponReady = true;
     }
 
     private void AimTurret()
     {
-        transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(targetDirection, Vector3.up), maxTurretRotationSpeed * Time.deltaTime);
+        var isEnemyInFront = Vector3.Dot(targetDirection, transform.forward) > 0;
+        var dotProd = Vector3.Dot(targetDirection, transform.right);
+        float engineValue;
+
+        if (isEnemyInFront)
+        {
+            engineValue = dotProd;
+        }
+        else
+        {
+            engineValue = dotProd > 0 ? 1 : -1;
+        }
+
+        transform.rotation *= Quaternion.AngleAxis(engineValue * maxTurretRotationSpeed * Time.deltaTime, transform.up);
     }
 
     private void AimCannon()
     {
         var projection = Vector3.ProjectOnPlane(targetDirection, transform.right);
-        cannon.transform.rotation = Quaternion.RotateTowards(cannon.transform.rotation, Quaternion.LookRotation(projection, Vector3.up), maxTurretRotationSpeed * Time.deltaTime);
+        cannon.transform.rotation *= Quaternion.AngleAxis(Vector3.Dot(projection, -cannon.transform.up) * maxTurretRotationSpeed * Time.deltaTime, Vector3.right);
     }
 
     void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawRay(transform.position, targetDirection*20);
+        Gizmos.DrawRay(cannon.transform.position, targetDirection*20);
     }
 }

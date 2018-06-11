@@ -14,7 +14,6 @@ public class BattleController : BattleElement
     private EnemySpawnController enemySpawnController;
     private PeriodicTask spawnEnemiesTask;
     private PeriodicTask decreasingEnemySpawnDelay;
-    private float enemySpawnDelay;
     private float additionSpeed;
 
     public static int EnemyLayer { get; private set; }
@@ -31,10 +30,12 @@ public class BattleController : BattleElement
 
     public MeshFilter LevelMesh { get { return levelMesh; } }
 
+    public float EnemySpawnDelay { get; private set; }
+
     private void SetPeriodicTasks()
     {
-        enemySpawnDelay = defaultEnemySpawnDelay;
-        spawnEnemiesTask = new PeriodicTask(SpawnEnemy, enemySpawnDelay);
+        EnemySpawnDelay = defaultEnemySpawnDelay;
+        spawnEnemiesTask = new PeriodicTask(SpawnEnemy, EnemySpawnDelay);
         decreasingEnemySpawnDelay = new PeriodicTask(Complication, enemySpawnDecreasingDelay);
     }
 
@@ -47,9 +48,9 @@ public class BattleController : BattleElement
 
     private void Complication()
     {
-        enemySpawnDelay = Mathf.Clamp(enemySpawnDelay - enemySpawnDecreaseStep, enemySpawnDecreaseStep, float.MaxValue);
+        EnemySpawnDelay = Mathf.Clamp(EnemySpawnDelay - enemySpawnDecreaseStep, enemySpawnDecreaseStep, float.MaxValue);
         additionSpeed += enemySpeedIncreaseStep;
-        spawnEnemiesTask.SetDelay(enemySpawnDelay);
+        spawnEnemiesTask.SetDelay(EnemySpawnDelay);
     }
 
     private void OnEnemyInstantiated(object sender, EnemyArgs args)
