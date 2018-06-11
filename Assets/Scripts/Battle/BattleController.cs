@@ -1,6 +1,17 @@
-﻿using Battle;
+﻿using System;
+using Battle;
 using Pool;
 using UnityEngine;
+
+public class ClockTickArgs : EventArgs
+{
+    public int Seconds { get; private set; }
+
+    public ClockTickArgs(int seconds)
+    {
+        Seconds = seconds;
+    }
+}
 
 public class BattleController : BattleElement
 {
@@ -14,7 +25,11 @@ public class BattleController : BattleElement
     private EnemySpawnController enemySpawnController;
     private PeriodicTask spawnEnemiesTask;
     private PeriodicTask decreasingEnemySpawnDelay;
+    private PeriodicTask clockTick;
+    private int timer;
     private float additionSpeed;
+
+    public static event EventHandler<ClockTickArgs> ClockTick = delegate { };
 
     public BattleStats BattleStats { get; private set; }
 
@@ -41,6 +56,13 @@ public class BattleController : BattleElement
         EnemySpawnDelay = defaultEnemySpawnDelay;
         spawnEnemiesTask = new PeriodicTask(SpawnEnemy, EnemySpawnDelay);
         decreasingEnemySpawnDelay = new PeriodicTask(Complication, enemySpawnDecreasingDelay);
+        clockTick = new PeriodicTask(Tick, 1);
+    }
+
+    private void Tick()
+    {
+        timer++;
+        ClockTick(this, new ClockTickArgs(timer));
     }
 
     private void SpawnEnemy()
@@ -66,6 +88,7 @@ public class BattleController : BattleElement
     {
         spawnEnemiesTask.TryExecute();
         decreasingEnemySpawnDelay.TryExecute();
+        clockTick.TryExecute();
     }
 
     void OnDestroy()
