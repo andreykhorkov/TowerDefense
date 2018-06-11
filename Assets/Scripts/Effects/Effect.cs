@@ -19,7 +19,6 @@ namespace VFX
         public override void OnTakenFromPool()
         {
             Initialize();
-            StartCoroutine(Playing());
         }
 
         public override void OnReturnedToPool()
@@ -35,8 +34,6 @@ namespace VFX
 
         public IEnumerator Playing()
         {
-            Play();
-
             while (IsPlaying)
             {
                 yield return null;

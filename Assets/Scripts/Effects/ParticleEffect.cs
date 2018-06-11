@@ -50,6 +50,7 @@ namespace VFX
         public override void Play()
         {
             particleEffect.Play();
+            StartCoroutine(Playing());
         }
 
         public override void Stop()

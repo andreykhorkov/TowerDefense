@@ -1,5 +1,4 @@
 ﻿using Battle;
-using Pool;
 using UnityEngine;
 
 public class EnemySpawnController : BattleElement
@@ -23,7 +22,11 @@ public class EnemySpawnController : BattleElement
         var currentEnemyFactory = Random.Range(0, 100) > 50 ? simpleEnemyFactory : advancedEnemyFactory;
 
         var enemy = currentEnemyFactory.SpawnEnemy();
-        enemy.transform.position = leftWing.position + startLine.normalized * Random.Range(0, startLine.magnitude);
         return enemy;
+    }
+
+    public Vector3 GetSpawnPos()
+    {
+        return leftWing.position + startLine.normalized * Random.Range(0, startLine.magnitude);
     }
 }

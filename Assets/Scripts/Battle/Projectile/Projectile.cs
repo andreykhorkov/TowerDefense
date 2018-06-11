@@ -90,7 +90,7 @@ public class Projectile : PooledBattleElement
         HitEnemyHandler(this, new HitArgs(collider));
 
         var explosion = PoolManager.GetObject<ParticleEffect>(explosionAssetPath);
-        explosion.SetOrientation(collider.transform.position, Quaternion.identity);
+        explosion.transform.position = collider.transform.position;
         explosion.Play();
     }
 

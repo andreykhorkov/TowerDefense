@@ -8,9 +8,13 @@ public class TurretController : BattleElement
 
     [SerializeField] private Transform cannon;
     [SerializeField, Tooltip("degrees/sec")] private float maxTurretRotationSpeed = 360;
-    [Header("20th part of levelBounds side")] [SerializeField, Range(0.1f, 3f)] private float enemyFindingDelay = 1;
+
+    [Header("20th part of levelBounds side")] 
     [SerializeField, Range(1, 10)] private float targetingRadiusFraction = 5;
     [SerializeField, Range(0.2f, 0.8f), Tooltip("msec")] private float fireDelay = 0.5f;
+
+    [Header("change offline only")]
+    [SerializeField, Range(0.1f, 1)] private float enemyFindingDelay = 1;
     [SerializeField, AssetPathGetter] private string projectileAssetPath;
     [SerializeField] private Transform shootPoint;
     [SerializeField] private Transform towerBottom;
@@ -50,7 +54,6 @@ public class TurretController : BattleElement
         towerBottomPosition = towerBottom.transform.position;
         choosingTarget = new PeriodicTask(ChooseTarget, enemyFindingDelay);
 
-        PoolManager.PreWarm<Projectile>(projectileAssetPath, 2);
         EnemyController.EnemyDestroyed += OnEnemyDestroyed;
     }
 
@@ -100,12 +103,6 @@ public class TurretController : BattleElement
     {
         if (ReferenceEquals(target, null))
         {
-            return;
-        }
-
-        if (Vector3.Distance(target.transform.position, towerBottomPosition) > targetingRadius)
-        {
-            target = null;
             return;
         }
 

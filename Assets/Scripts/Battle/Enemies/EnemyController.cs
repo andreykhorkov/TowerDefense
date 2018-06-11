@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using Pool;
 using UnityEngine;
 using UnityEngine.AI;
@@ -47,9 +48,9 @@ public abstract class EnemyController : PooledBattleElement
 
     public static event EventHandler<EnemyArgs> EnemyDestroyed = delegate { };
 
-    private void OnTriggerExit(Collider collider)
+    private void OnTriggerEnter(Collider collider)
     {
-        if (collider.gameObject.layer == BattleController.LevelBoundsLayer)
+        if (collider.gameObject.layer == BattleController.FinishLayer)
         {
             ReturnObject();
         }
@@ -68,7 +69,7 @@ public abstract class EnemyController : PooledBattleElement
         if (health <= 0)
         {
             var explosion = PoolManager.GetObject<ParticleEffect>(explosionAssetPath);
-            explosion.SetOrientation(transform.position, Quaternion.identity);
+            explosion.transform.position = transform.position;
             explosion.Play();
 
             ReturnObject();
@@ -85,9 +86,8 @@ public abstract class EnemyController : PooledBattleElement
         Id = BattleController.LastEnemyId + 1;
         name = string.Format("{0}_{1}", VehicleName, Id);
         collider = GetComponent<Collider>();
-        PoolManager.PreWarm<ParticleEffect>(explosionAssetPath, 5);
+  
         Projectile.HitEnemyHandler += OnTakesDamage;
-
         EnemyInstantiated(this, new EnemyArgs(Id, EnemyType));
     }
 
@@ -99,6 +99,7 @@ public abstract class EnemyController : PooledBattleElement
 
     public void SetGoalDestination()
     {
+        navMeshAgent.Warp(BattleRoot.EnemySpawnController.GetSpawnPos());
         navMeshAgent.enabled = true;
         navMeshAgent.ResetPath();
         navMeshAgent.SetDestination(BattleController.GoalPosition);

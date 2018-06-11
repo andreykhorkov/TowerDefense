@@ -17,7 +17,7 @@ public class BattleController : BattleElement
 {
     [SerializeField] private Transform goalPoint;
     [SerializeField] private float defaultEnemySpawnDelay = 5; 
-    [SerializeField] private float enemySpawnDecreaseStep = 0.05f;
+    [SerializeField] private float enemySpawnDelayDecreaseStep = 0.1f;
     [SerializeField] private float enemySpeedIncreaseStep = 0.05f;
     [SerializeField] private float enemySpawnDecreasingDelay = 2;
     [SerializeField] private MeshFilter levelMesh;
@@ -36,6 +36,8 @@ public class BattleController : BattleElement
     public static int EnemyLayer { get; private set; }
 
     public static int LevelBoundsLayer { get; private set; }
+
+    public static int FinishLayer { get; private set; }
 
     public static int ProjectileLayer { get; private set; }
 
@@ -74,7 +76,7 @@ public class BattleController : BattleElement
 
     private void Complication()
     {
-        EnemySpawnDelay = Mathf.Clamp(EnemySpawnDelay - enemySpawnDecreaseStep, enemySpawnDecreaseStep, float.MaxValue);
+        EnemySpawnDelay = Mathf.Clamp(EnemySpawnDelay - enemySpawnDelayDecreaseStep, enemySpawnDelayDecreaseStep, float.MaxValue);
         additionSpeed += enemySpeedIncreaseStep;
         spawnEnemiesTask.SetDelay(EnemySpawnDelay);
     }
@@ -107,6 +109,7 @@ public class BattleController : BattleElement
         PooledPosition = PoolManager.Instance.transform.position;
         EnemyController.EnemyInstantiated += OnEnemyInstantiated;
         LevelBoundsLayer = LayerMask.NameToLayer("LevelBounds");
+        FinishLayer = LayerMask.NameToLayer("Finish");
         ProjectileLayer = LayerMask.NameToLayer("Projectile");
         PoolLayer = LayerMask.NameToLayer("Pool");
         EnemyLayer = LayerMask.NameToLayer("Enemy");
