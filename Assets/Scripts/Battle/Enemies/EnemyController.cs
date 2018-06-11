@@ -1,8 +1,19 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using Enemies;
 using Pool;
 using UnityEngine;
 using UnityEngine.AI;
+
+public class EnemyArgs : EventArgs
+{
+    public int Id { get; private set; }
+
+    public EnemyArgs(int id)
+    {
+        Id = id;
+    }
+}
 
 public abstract class EnemyController : PooledBattleElement
 {
@@ -15,6 +26,12 @@ public abstract class EnemyController : PooledBattleElement
     protected NavMeshAgent navMeshAgent;
     protected BattleController BattleController;
     protected Vector3 pooledPosition;
+
+    public abstract string VehicleName { get; }
+
+    public int Id { get; private set; }
+
+    public static event EventHandler<EnemyArgs> EnemyInstantiated = delegate { };
 
     private void OnTriggerExit(Collider collider)
     {
@@ -38,6 +55,10 @@ public abstract class EnemyController : PooledBattleElement
         levelBoundsLayer = LayerMask.NameToLayer("LevelBounds");
 
         navMeshAgent = GetComponent<NavMeshAgent>();
+        Id = BattleController.LastEnemyId + 1;
+        name = string.Format("{0}_{1}", VehicleName, Id);
+
+        EnemyInstantiated(this, new EnemyArgs(Id));
     }
 
     public override void OnTakenFromPool()

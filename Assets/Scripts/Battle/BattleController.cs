@@ -1,4 +1,5 @@
-﻿using Battle;
+﻿using System;
+using Battle;
 using UnityEngine;
 
 public class BattleController : BattleElement
@@ -8,12 +9,17 @@ public class BattleController : BattleElement
     [SerializeField] private float enemySpawnDecreaseStep = 0.05f;
     [SerializeField] private float enemySpeedIncreaseStep = 0.05f;
     [SerializeField] private float enemySpawnDecreasingDelay = 2;
+    [SerializeField] private MeshFilter levelMesh;
 
     private EnemySpawnController enemySpawnController;
     private PeriodicTask spawnEnemiesTask;
     private PeriodicTask decreasingEnemySpawnDelay;
     private float enemySpawnDelay;
     private float additionSpeed;
+    
+    public int LastEnemyId { get; private set; }
+
+    public MeshFilter LevelMesh { get { return levelMesh; } }
 
     public Vector3 GoalPosition { get; private set; }
 
@@ -24,6 +30,18 @@ public class BattleController : BattleElement
         GoalPosition = goalPoint.position;
         enemySpawnController = BattleRoot.EnemySpawnController;
         SetPeriodicTasks();
+        LastEnemyId = -1;
+        EnemyController.EnemyInstantiated += OnEnemyInstantiated;
+    }
+
+    private void OnDestroy()
+    {
+        EnemyController.EnemyInstantiated -= OnEnemyInstantiated;
+    }
+
+    private void OnEnemyInstantiated(object sender, EnemyArgs args)
+    {
+        LastEnemyId = args.Id;
     }
 
     private void SetPeriodicTasks()

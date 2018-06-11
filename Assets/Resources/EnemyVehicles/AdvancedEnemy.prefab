@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 33798321324169878}
   - component: {fileID: 23032632152854904}
   - component: {fileID: 65117943380946928}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Cube (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -40,7 +40,7 @@ GameObject:
   - component: {fileID: 33773189508398188}
   - component: {fileID: 23197179441117626}
   - component: {fileID: 136569134248750182}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Cylinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -58,7 +58,7 @@ GameObject:
   - component: {fileID: 33037990657095398}
   - component: {fileID: 23963679629952000}
   - component: {fileID: 136743335663676514}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Cylinder (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -76,7 +76,7 @@ GameObject:
   - component: {fileID: 33009018763606114}
   - component: {fileID: 23860174108192906}
   - component: {fileID: 65686556116263378}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -92,7 +92,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4748471829293458}
   - component: {fileID: 114515656710195604}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: AdvancedEnemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -371,7 +371,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebf83cd05b0378b4fa0cd1311e642caf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyParams: {fileID: 11400000, guid: b7a08c7e2bce0ab40b111d38821d9b3d, type: 2}
+  enemyParams: {fileID: 11400000, guid: 9ed638e360ae8a64d9da57d5fcda4b25, type: 2}
 --- !u!136 &136569134248750182
 CapsuleCollider:
   m_ObjectHideFlags: 1

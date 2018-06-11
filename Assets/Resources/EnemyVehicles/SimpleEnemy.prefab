@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 4337606661539976}
   - component: {fileID: 33526898919244192}
   - component: {fileID: 23631792556084734}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Tyres
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -38,7 +38,7 @@ GameObject:
   - component: {fileID: 4363619395433546}
   - component: {fileID: 33335793449093952}
   - component: {fileID: 23848535032973794}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -55,7 +55,7 @@ GameObject:
   - component: {fileID: 4825399990669166}
   - component: {fileID: 33529290462073084}
   - component: {fileID: 23322133023066554}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Turret
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -73,8 +73,8 @@ GameObject:
   - component: {fileID: 65312663426527886}
   - component: {fileID: 114859456236953356}
   - component: {fileID: 195207894167935480}
-  m_Layer: 0
-  m_Name: Enemy
+  m_Layer: 11
+  m_Name: SimpleEnemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -90,7 +90,7 @@ GameObject:
   - component: {fileID: 4804909599422974}
   - component: {fileID: 33004226557778976}
   - component: {fileID: 23232861214619832}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Tyres
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -107,7 +107,7 @@ GameObject:
   - component: {fileID: 4178884655475736}
   - component: {fileID: 33539353622585490}
   - component: {fileID: 23534777297893872}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Cannon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
