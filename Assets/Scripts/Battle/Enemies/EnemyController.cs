@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections;
-using Enemies;
+using Pool;
+using Projectiles;
 using UnityEngine;
 using UnityEngine.AI;
+using VFX;
 
 public class EnemyArgs : EventArgs
 {
@@ -17,23 +19,35 @@ public class EnemyArgs : EventArgs
 public abstract class EnemyController : PooledBattleElement
 {
     [SerializeField] protected EnemyParams enemyParams;
-
-    protected EnemyState idleState;
-    protected EnemyState normalState;
-    protected EnemyState currentState;
-    protected int levelBoundsLayer;
+    [SerializeField, AssetPathGetter] private string explosionAssetPath;
+    
     protected NavMeshAgent navMeshAgent;
-    protected BattleController battleController;
 
     public abstract string VehicleName { get; }
 
     public int Id { get; private set; }
 
+    public float Speed { get { return navMeshAgent.speed; } }
+
+    public static event EventHandler<EnemyArgs> EnemyInstantiated = delegate { }; 
+
     private void OnTriggerExit(Collider collider)
     {
-        if (collider.gameObject.layer == levelBoundsLayer)
+        if (collider.gameObject.layer == BattleController.LevelBoundsLayer)
         {
             ReturnObject();
+        }
+    }
+
+    private void OnTriggerEnter(Collider collider)
+    {
+        if (collider.gameObject.layer == BattleController.ProjectileLayer)
+        {
+            var explosion = PoolManager.GetObject<ParticleEffect>(explosionAssetPath);
+            explosion.SetOrientation(collider.transform.position, Quaternion.identity);
+            explosion.Play();
+
+            
         }
     }
 
@@ -41,20 +55,12 @@ public abstract class EnemyController : PooledBattleElement
     {
         base.Initialize();
 
-        battleController = BattleRoot.BattleController;
-
-        idleState = new IdleState(this);
-        normalState = new NormalState(this);
-        currentState = normalState;
-
-        levelBoundsLayer = LayerMask.NameToLayer("LevelBounds");
-
         navMeshAgent = GetComponent<NavMeshAgent>();
         Id = BattleController.LastEnemyId + 1;
         name = string.Format("{0}_{1}", VehicleName, Id);
-        Debug.Log(name);
+        PoolManager.PreWarm<ParticleEffect>(explosionAssetPath, 5);
 
-        battleController.SetLastEnemyId(Id);
+        EnemyInstantiated(this, new EnemyArgs(Id));
     }
 
     public override void OnTakenFromPool()
@@ -67,7 +73,7 @@ public abstract class EnemyController : PooledBattleElement
         navMeshAgent.enabled = true;
         yield return null;
         navMeshAgent.ResetPath();
-        navMeshAgent.SetDestination(battleController.GoalPosition);
+        navMeshAgent.SetDestination(BattleController.GoalPosition);
     }
 
     public void AddSpeed(float addedSpeed)
@@ -85,7 +91,6 @@ public abstract class EnemyController : PooledBattleElement
     {
         SetOrientation(BattleController.PooledPosition, Quaternion.identity);
         navMeshAgent.enabled = false;
-        Debug.LogError(name);
     }
 
     public abstract void Move();

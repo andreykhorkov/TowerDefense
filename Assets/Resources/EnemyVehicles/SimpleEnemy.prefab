@@ -417,8 +417,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1.0434117, y: 1, z: 2.2280684}
-  m_Center: {x: -0.021705866, y: 0, z: 0.105372906}
+  m_Size: {x: 1.52, y: 1.04, z: 2.95}
+  m_Center: {x: 0, y: 0, z: -0.07}
 --- !u!114 &114859456236953356
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -431,6 +431,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyParams: {fileID: 11400000, guid: b7a08c7e2bce0ab40b111d38821d9b3d, type: 2}
+  explosionAssetPath: Simple_explosion
 --- !u!195 &195207894167935480
 NavMeshAgent:
   m_ObjectHideFlags: 1

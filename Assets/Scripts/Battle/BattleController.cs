@@ -17,13 +17,19 @@ public class BattleController : BattleElement
     private float enemySpawnDelay;
     private float additionSpeed;
 
+    public static int EnemyLayer { get; private set; }
+
+    public static int LevelBoundsLayer { get; private set; }
+
+    public static int ProjectileLayer { get; private set; }
+
     public static Vector3 PooledPosition { get; private set; }
     
     public static int LastEnemyId { get; private set; }
 
-    public MeshFilter LevelMesh { get { return levelMesh; } }
+    public static Vector3 GoalPosition { get; private set; }
 
-    public Vector3 GoalPosition { get; private set; }
+    public MeshFilter LevelMesh { get { return levelMesh; } }
 
     private void SetPeriodicTasks()
     {
@@ -46,17 +52,20 @@ public class BattleController : BattleElement
         spawnEnemiesTask.SetDelay(enemySpawnDelay);
     }
 
+    private void OnEnemyInstantiated(object sender, EnemyArgs args)
+    {
+        LastEnemyId++;
+    }
+
     void Update()
     {
         spawnEnemiesTask.TryExecute();
         decreasingEnemySpawnDelay.TryExecute();
+    }
 
-        //if (Input.GetKeyDown(KeyCode.A))
-        //{
-        //    var enemy = enemySpawnController.SpawnEnemy();
-        //    enemy.AddSpeed(0);
-        //    StartCoroutine(enemy.SetGoalDestination());
-        //}
+    void OnDestroy()
+    {
+        EnemyController.EnemyInstantiated -= OnEnemyInstantiated;
     }
 
     protected override void Initialize()
@@ -68,10 +77,9 @@ public class BattleController : BattleElement
         SetPeriodicTasks();
         LastEnemyId = -1;
         PooledPosition = PoolManager.Instance.transform.position;
-    }
-
-    public void SetLastEnemyId(int id)
-    {
-        LastEnemyId = id;
+        EnemyController.EnemyInstantiated += OnEnemyInstantiated;
+        LevelBoundsLayer = LayerMask.NameToLayer("LevelBounds");
+        ProjectileLayer = LayerMask.NameToLayer("Projectile");
+        EnemyLayer = LayerMask.NameToLayer("Enemy");
     }
 }

@@ -1,8 +1,8 @@
-﻿namespace Enemies
+﻿namespace Projectiles
 {
-    public class IdleState : EnemyState
+    public class IdleState : ProjectileState
     {
-        public IdleState(EnemyController enemy) : base(enemy)
+        public IdleState(Projectile projectile) : base(projectile)
         {
         }
 
@@ -14,7 +14,7 @@
         {
         }
 
-        public override void Move()
+        public override void Update()
         {
         }
     }

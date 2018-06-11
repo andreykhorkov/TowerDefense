@@ -373,6 +373,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyParams: {fileID: 11400000, guid: 9ed638e360ae8a64d9da57d5fcda4b25, type: 2}
+  explosionAssetPath: Simple_explosion
 --- !u!136 &136569134248750182
 CapsuleCollider:
   m_ObjectHideFlags: 1

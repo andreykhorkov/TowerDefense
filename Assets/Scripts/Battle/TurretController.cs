@@ -1,6 +1,7 @@
 ﻿using Battle;
 using Pool;
 using UnityEngine;
+using VFX;
 
 public class TurretController : BattleElement
 {
@@ -11,6 +12,8 @@ public class TurretController : BattleElement
     [SerializeField, Range(1, 10)] private float targetingRadiusFraction = 5;
     [SerializeField, Range(0.2f, 0.8f), Tooltip("msec")] private float fireDelay = 0.5f;
     [SerializeField, AssetPathGetter] private string projectileAssetPath;
+    [SerializeField] private Transform shootPoint;
+    [SerializeField] private ProjectileParams projectileParams;
 
     private EnemyController target;
     private BattleController battleController;
@@ -18,7 +21,10 @@ public class TurretController : BattleElement
     private int enemyLayerMask;
     private Collider[] colsWithinTargetingRadius = new Collider[100];
     private Vector3 turretPosition;
+    private Vector3 targetDirection;
     private PeriodicTask shootingTask;
+
+    public ProjectileParams ProjectileParams { get { return projectileParams; } }
 
     void Update()
     {
@@ -39,13 +45,16 @@ public class TurretController : BattleElement
         shootingTask = new PeriodicTask(Fire, fireDelay);
 
         PoolManager.PreWarm<Projectile>(projectileAssetPath, 2);
+        
     }
 
     private void Fire()
     {
         if (target != null)
         {
-            Debug.LogFormat("Fire to {0}", target.Id);
+            var projectile = PoolManager.GetObject<Projectile>(projectileAssetPath);
+            projectile.SetOrientation(shootPoint.position, Quaternion.identity);
+            projectile.Throw(targetDirection);
         }
 
         ChooseTarget();
@@ -91,33 +100,34 @@ public class TurretController : BattleElement
             return;
         }
 
-        var dir = (target.transform.position - cannon.position).normalized;
+        var dir = target.transform.position - cannon.position;
+        var dist = Vector3.Distance(shootPoint.position, target.transform.position);
+        var timeToHit = dist / projectileParams.Speed;
+        var correction = timeToHit * target.transform.forward * target.Speed;
+        var correctedDirection = dir + correction;
 
-        AimTurret(dir);
-        AimCannon(dir);
+        targetDirection = correctedDirection.normalized;
+        
+        
+
+        AimTurret();
+        AimCannon();
     }
 
-    private void AimTurret(Vector3 dir)
+    private void AimTurret()
     {
-        var isEnemyInFront = Vector3.Dot(dir, transform.forward) > 0;
-        var dotProd = Vector3.Dot(dir, transform.right);
-        float engineValue;
-
-        if (isEnemyInFront)
-        {
-            engineValue = dotProd;
-        }
-        else
-        {
-            engineValue = dotProd > 0 ? 1 : -1;
-        }
-
-        transform.rotation *= Quaternion.AngleAxis(engineValue * maxTurretRotationSpeed * Time.deltaTime, transform.up);
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(targetDirection, Vector3.up), maxTurretRotationSpeed * Time.deltaTime);
     }
 
-    private void AimCannon(Vector3 dir)
+    private void AimCannon()
     {
-        var projection = Vector3.ProjectOnPlane(dir, transform.right);
-        cannon.transform.rotation *= Quaternion.AngleAxis(Vector3.Dot(projection, -cannon.transform.up) * maxTurretRotationSpeed * Time.deltaTime, Vector3.right);
+        var projection = Vector3.ProjectOnPlane(targetDirection, transform.right);
+        cannon.transform.rotation = Quaternion.RotateTowards(cannon.transform.rotation, Quaternion.LookRotation(projection, Vector3.up), maxTurretRotationSpeed * Time.deltaTime);
+    }
+
+    void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawRay(transform.position, targetDirection*20);
     }
 }
