@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using Enemies;
-using Pool;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -24,14 +23,11 @@ public abstract class EnemyController : PooledBattleElement
     protected EnemyState currentState;
     protected int levelBoundsLayer;
     protected NavMeshAgent navMeshAgent;
-    protected BattleController BattleController;
-    protected Vector3 pooledPosition;
+    protected BattleController battleController;
 
     public abstract string VehicleName { get; }
 
     public int Id { get; private set; }
-
-    public static event EventHandler<EnemyArgs> EnemyInstantiated = delegate { };
 
     private void OnTriggerExit(Collider collider)
     {
@@ -45,8 +41,7 @@ public abstract class EnemyController : PooledBattleElement
     {
         base.Initialize();
 
-        BattleController = BattleRoot.BattleController;
-        pooledPosition = PoolManager.Instance.transform.position;
+        battleController = BattleRoot.BattleController;
 
         idleState = new IdleState(this);
         normalState = new NormalState(this);
@@ -57,8 +52,9 @@ public abstract class EnemyController : PooledBattleElement
         navMeshAgent = GetComponent<NavMeshAgent>();
         Id = BattleController.LastEnemyId + 1;
         name = string.Format("{0}_{1}", VehicleName, Id);
+        Debug.Log(name);
 
-        EnemyInstantiated(this, new EnemyArgs(Id));
+        battleController.SetLastEnemyId(Id);
     }
 
     public override void OnTakenFromPool()
@@ -71,7 +67,7 @@ public abstract class EnemyController : PooledBattleElement
         navMeshAgent.enabled = true;
         yield return null;
         navMeshAgent.ResetPath();
-        navMeshAgent.SetDestination(BattleController.GoalPosition);
+        navMeshAgent.SetDestination(battleController.GoalPosition);
     }
 
     public void AddSpeed(float addedSpeed)
@@ -81,12 +77,15 @@ public abstract class EnemyController : PooledBattleElement
 
     public override void OnReturnedToPool()
     {
-        SetOrientation(pooledPosition, Quaternion.identity);
+        SetOrientation(BattleController.PooledPosition, Quaternion.identity);
         navMeshAgent.enabled = false;
     }
 
     public override void OnPreWarmed()
     {
+        SetOrientation(BattleController.PooledPosition, Quaternion.identity);
+        navMeshAgent.enabled = false;
+        Debug.LogError(name);
     }
 
     public abstract void Move();

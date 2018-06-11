@@ -1,4 +1,5 @@
 ﻿using Battle;
+using Pool;
 using UnityEngine;
 
 public class TurretController : BattleElement
@@ -9,6 +10,7 @@ public class TurretController : BattleElement
     [Header("20th part of levelBounds side")]
     [SerializeField, Range(1, 10)] private float targetingRadiusFraction = 5;
     [SerializeField, Range(0.2f, 0.8f), Tooltip("msec")] private float fireDelay = 0.5f;
+    [SerializeField, AssetPathGetter] private string projectileAssetPath;
 
     private EnemyController target;
     private BattleController battleController;
@@ -35,6 +37,8 @@ public class TurretController : BattleElement
         turretPosition = transform.position;
 
         shootingTask = new PeriodicTask(Fire, fireDelay);
+
+        PoolManager.PreWarm<Projectile>(projectileAssetPath, 2);
     }
 
     private void Fire()

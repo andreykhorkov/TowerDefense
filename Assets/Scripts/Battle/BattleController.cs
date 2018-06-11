@@ -1,5 +1,5 @@
-﻿using System;
-using Battle;
+﻿using Battle;
+using Pool;
 using UnityEngine;
 
 public class BattleController : BattleElement
@@ -16,33 +16,14 @@ public class BattleController : BattleElement
     private PeriodicTask decreasingEnemySpawnDelay;
     private float enemySpawnDelay;
     private float additionSpeed;
+
+    public static Vector3 PooledPosition { get; private set; }
     
-    public int LastEnemyId { get; private set; }
+    public static int LastEnemyId { get; private set; }
 
     public MeshFilter LevelMesh { get { return levelMesh; } }
 
     public Vector3 GoalPosition { get; private set; }
-
-    protected override void Initialize()
-    {
-        base.Initialize();
-
-        GoalPosition = goalPoint.position;
-        enemySpawnController = BattleRoot.EnemySpawnController;
-        SetPeriodicTasks();
-        LastEnemyId = -1;
-        EnemyController.EnemyInstantiated += OnEnemyInstantiated;
-    }
-
-    private void OnDestroy()
-    {
-        EnemyController.EnemyInstantiated -= OnEnemyInstantiated;
-    }
-
-    private void OnEnemyInstantiated(object sender, EnemyArgs args)
-    {
-        LastEnemyId = args.Id;
-    }
 
     private void SetPeriodicTasks()
     {
@@ -76,5 +57,21 @@ public class BattleController : BattleElement
         //    enemy.AddSpeed(0);
         //    StartCoroutine(enemy.SetGoalDestination());
         //}
+    }
+
+    protected override void Initialize()
+    {
+        base.Initialize();
+
+        GoalPosition = goalPoint.position;
+        enemySpawnController = BattleRoot.EnemySpawnController;
+        SetPeriodicTasks();
+        LastEnemyId = -1;
+        PooledPosition = PoolManager.Instance.transform.position;
+    }
+
+    public void SetLastEnemyId(int id)
+    {
+        LastEnemyId = id;
     }
 }

@@ -6,7 +6,7 @@ namespace Battle
     {
         public BattleRoot BattleRoot { get; private set; }
 
-        private void Awake()
+        private void Start()
         {
             Initialize();
         }
