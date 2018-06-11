@@ -10,6 +10,8 @@ public class Scores : BattleElement
     [SerializeField] private Text numAdvanced;
     [SerializeField] private Text timer;
 
+    private StringBuilder sb = new StringBuilder(5);
+
     private BattleStats battleStats;
 
     protected override void Initialize()
@@ -36,11 +38,15 @@ public class Scores : BattleElement
 
     private void OnClockTick(object sender, ClockTickArgs args)
     {
+        sb.Remove(0, sb.Length);
+
         var t = args.Seconds;
         var min =  t/60;
         var sec = t%60;
 
-        timer.text = string.Format("{0:D2}:{1:D2}", min, sec);
+        sb.AppendFormat("{0:D2}:{1:D2}", min, sec);
+
+        timer.text = sb.ToString();
     }
 
 }
