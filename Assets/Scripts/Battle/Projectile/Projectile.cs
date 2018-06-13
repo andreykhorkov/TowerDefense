@@ -4,13 +4,25 @@ using Projectiles;
 using UnityEngine;
 using VFX;
 
-public class HitArgs : EventArgs
+public class HitEnemyColArgs : EventArgs
 {
     public Collider Collider { get; private set; }
 
-    public HitArgs(Collider collider)
+    public HitEnemyColArgs(Collider collider)
     {
         Collider = collider;
+    }
+}
+
+public class HitEnemyArgs : EventArgs
+{
+    public int Id { get; private set; }
+    public int Damage { get; private set; }
+
+    public HitEnemyArgs(int id, int damage)
+    {
+        Id = id;
+        Damage = damage;
     }
 }
 
@@ -25,8 +37,12 @@ public class Projectile : PooledBattleElement
     private ThrownState thrownState;
     private ProjectileState currentState;
     private Vector3 throwDirection;
+    private TurretController turretController;
+    private EnemyController target;
 
-    public static event EventHandler<HitArgs> HitEnemyHandler = delegate { };
+    public static event EventHandler<HitEnemyColArgs> HitEnemyColliderHandler = delegate { };
+
+    public static event EventHandler<HitEnemyArgs> HitEnemyHandler = delegate { };
 
     public ProjectileParams ProjectileParams { get { return projectileParams; } }
 
@@ -36,6 +52,7 @@ public class Projectile : PooledBattleElement
 
         sphereCollider = GetComponent<SphereCollider>();
         trailRenderer = GetComponent<TrailRenderer>();
+        turretController = BattleRoot.BattleController.TurretController;
 
         idleState = new IdleState(this);
         thrownState = new ThrownState(this);
@@ -48,6 +65,11 @@ public class Projectile : PooledBattleElement
         trailRenderer.enabled = false;
         SetOrientation(BattleController.PooledPosition, Quaternion.identity);
         SetState(idleState);
+    }
+
+    public void SetTarget(EnemyController target)
+    {
+        this.target = target;
     }
 
     public void SetState(ProjectileState state)
@@ -87,7 +109,7 @@ public class Projectile : PooledBattleElement
         }
 
         ReturnObject();
-        HitEnemyHandler(this, new HitArgs(collider));
+        HitEnemyColliderHandler(this, new HitEnemyColArgs(collider));
 
         var explosion = PoolManager.GetObject<ParticleEffect>(explosionAssetPath);
         explosion.transform.position = collider.transform.position;
@@ -99,6 +121,11 @@ public class Projectile : PooledBattleElement
         if (collider.gameObject.layer == BattleController.LevelBoundsLayer)
         {
             ReturnObject();
+            HitEnemyHandler(this, new HitEnemyArgs(target.Id, projectileParams.Damage));
+
+            var explosion = PoolManager.GetObject<ParticleEffect>(explosionAssetPath);
+            explosion.SetOrientation(target.transform.position, Quaternion.identity);
+            explosion.Play();
         }
     }
 

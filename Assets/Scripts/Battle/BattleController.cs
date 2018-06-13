@@ -21,6 +21,7 @@ public class BattleController : BattleElement
     [SerializeField] private float enemySpeedIncreaseStep = 0.05f;
     [SerializeField] private float enemySpawnDecreasingDelay = 2;
     [SerializeField] private MeshFilter levelMesh;
+    [SerializeField] private TurretController turretController;
 
     private EnemySpawnController enemySpawnController;
     private PeriodicTask spawnEnemiesTask;
@@ -30,6 +31,8 @@ public class BattleController : BattleElement
     private float additionSpeed;
 
     public static event EventHandler<ClockTickArgs> ClockTick = delegate { };
+
+    public TurretController TurretController { get { return turretController; } }
 
     public BattleStats BattleStats { get; private set; }
 

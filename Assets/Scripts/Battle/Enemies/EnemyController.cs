@@ -56,15 +56,31 @@ public abstract class EnemyController : PooledBattleElement
         }
     }
 
-    private void OnTakesDamage(object sender, HitArgs args)
+    private void OnProjectileHitCollider(object sender, HitEnemyColArgs enemyColArgs)
     {
-        if (collider != args.Collider)
+        if (collider != enemyColArgs.Collider)
         {
             return;
         }
 
         var projectile = sender as Projectile;
-        health -= projectile.ProjectileParams.Damage;
+        var damage = projectile.ProjectileParams.Damage;
+        TakeDamage(damage);
+    }
+
+    private void OnTakesDamage(object sender, HitEnemyArgs hitEnemyArgs)
+    {
+        if (Id != hitEnemyArgs.Id)
+        {
+            return;
+        }
+
+        TakeDamage(hitEnemyArgs.Damage);
+    }
+
+    private void TakeDamage(int damage)
+    {
+        health -= damage;
 
         if (health <= 0)
         {
@@ -87,8 +103,15 @@ public abstract class EnemyController : PooledBattleElement
         name = string.Format("{0}_{1}", VehicleName, Id);
         collider = GetComponent<Collider>();
   
-        Projectile.HitEnemyHandler += OnTakesDamage;
+        Projectile.HitEnemyColliderHandler += OnProjectileHitCollider;
+        Projectile.HitEnemyHandler += OnTakesDamage; 
         EnemyInstantiated(this, new EnemyArgs(Id, EnemyType));
+    }
+
+    public void ForceHitByTheProjectile(Projectile projectile)
+    {
+        projectile.ReturnObject();
+        OnProjectileHitCollider(this, new HitEnemyColArgs(projectile.GetComponent<Collider>()));
     }
 
     public override void OnTakenFromPool()
@@ -127,6 +150,6 @@ public abstract class EnemyController : PooledBattleElement
 
     void OnDestroy()
     {
-        Projectile.HitEnemyHandler -= OnTakesDamage;
+        Projectile.HitEnemyColliderHandler -= OnProjectileHitCollider;
     }
 }

@@ -31,6 +31,8 @@ public class TurretController : BattleElement
     private bool isWeaponReady = true;
     private float targetingRadius;
 
+    public Transform Target { get { return target.transform; } }
+
     public ProjectileParams ProjectileParams { get { return projectileParams; } }
 
     void Update()
@@ -60,7 +62,8 @@ public class TurretController : BattleElement
     private void Fire()
     {
         var projectile = PoolManager.GetObject<Projectile>(projectileAssetPath);
-        projectile.SetOrientation(shootPoint.position, Quaternion.identity);
+        projectile.SetOrientation(shootPoint.position, shootPoint.rotation);
+        projectile.SetTarget(target);
         projectile.Throw(targetDirection);
 
         StartCoroutine(Reloading());
@@ -107,6 +110,13 @@ public class TurretController : BattleElement
         }
 
         var dir = target.transform.position - cannon.position;
+
+        if (dir.magnitude > targetingRadius)
+        {
+            ChooseTarget();
+            return;
+        }
+     
         var dist = Vector3.Distance(shootPoint.position, target.transform.position);
         var timeToHit = dist / projectileParams.Speed;
         var correction = timeToHit * target.transform.forward * target.Speed;
