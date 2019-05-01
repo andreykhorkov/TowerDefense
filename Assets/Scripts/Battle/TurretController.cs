@@ -110,12 +110,6 @@ public class TurretController : BattleElement
         }
 
         var dir = target.transform.position - cannon.position;
-
-        if (dir.magnitude > targetingRadius)
-        {
-            ChooseTarget();
-            return;
-        }
      
         var dist = Vector3.Distance(shootPoint.position, target.transform.position);
         var timeToHit = dist / projectileParams.Speed;
