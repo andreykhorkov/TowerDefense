@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class ClockTickArgs : EventArgs
 {
-    public int Seconds { get; private set; }
+    public int Seconds { get; }
 
     public ClockTickArgs(int seconds)
     {

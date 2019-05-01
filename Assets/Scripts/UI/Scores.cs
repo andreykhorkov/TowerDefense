@@ -12,7 +12,7 @@ public class Scores : BattleElement
     [SerializeField] private Text numAdvanced;
     [SerializeField] private Text timer;
 
-    private StringBuilder sb = new StringBuilder(5);
+    private readonly StringBuilder sb = new StringBuilder(5);
 
     private BattleStats battleStats;
 
