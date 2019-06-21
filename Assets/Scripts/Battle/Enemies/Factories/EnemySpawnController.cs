@@ -1,7 +1,6 @@
-﻿using Battle;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class EnemySpawnController : BattleElement
+public class EnemySpawnController : MonoBehaviour
 {
 
     [SerializeField] private Transform leftWing;
@@ -10,10 +9,8 @@ public class EnemySpawnController : BattleElement
     [SerializeField] private EnemyFactory advancedEnemyFactory;
     private Vector3 startLine;
 
-    protected override void Initialize()
+    protected void Initialize()
     {
-        base.Initialize();
-
         startLine = rightWing.position - leftWing.position;
     }
 

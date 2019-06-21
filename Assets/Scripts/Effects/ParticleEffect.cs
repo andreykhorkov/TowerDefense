@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using Zenject;
 
 namespace VFX
 {
@@ -57,5 +58,7 @@ namespace VFX
         {
             particleEffect.Stop();
         }
+
+        public class Factory : PlaceholderFactory<string, ParticleEffect> { }
     }
 }

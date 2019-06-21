@@ -3,6 +3,7 @@ using Pool;
 using Projectiles;
 using UnityEngine;
 using VFX;
+using Zenject;
 
 public class HitEnemyColArgs : EventArgs
 {
@@ -26,10 +27,11 @@ public class HitEnemyArgs : EventArgs
     }
 }
 
-public class Projectile : PooledBattleElement
+public class Projectile : PoolObject
 {
     [SerializeField] private ProjectileParams projectileParams;
     [SerializeField, AssetPathGetter] private string explosionAssetPath;
+    [Inject] private ParticleEffect.Factory factory;
 
     private SphereCollider sphereCollider;
     private TrailRenderer trailRenderer;
@@ -46,13 +48,12 @@ public class Projectile : PooledBattleElement
 
     public ProjectileParams ProjectileParams { get { return projectileParams; } }
 
-    protected override void Initialize()
+    [Inject]
+    protected void Initialize(TurretController turretController)
     {
-        base.Initialize();
-
         sphereCollider = GetComponent<SphereCollider>();
         trailRenderer = GetComponent<TrailRenderer>();
-        turretController = BattleRoot.BattleController.TurretController;
+        this.turretController = turretController;
 
         idleState = new IdleState(this);
         thrownState = new ThrownState(this);
@@ -65,6 +66,10 @@ public class Projectile : PooledBattleElement
         trailRenderer.enabled = false;
         SetOrientation(BattleController.PooledPosition, Quaternion.identity);
         SetState(idleState);
+    }
+
+    public override void OnPreWarmed()
+    {
     }
 
     public void SetTarget(EnemyController target)
@@ -111,7 +116,7 @@ public class Projectile : PooledBattleElement
         ReturnObject();
         HitEnemyColliderHandler(this, new HitEnemyColArgs(collider));
 
-        var explosion = PoolManager.GetObject<ParticleEffect>(explosionAssetPath);
+        var explosion = PoolManager.GetObject<ParticleEffect>(explosionAssetPath, factory);
         explosion.transform.position = collider.transform.position;
         explosion.Play();
     }
@@ -123,7 +128,7 @@ public class Projectile : PooledBattleElement
             ReturnObject();
             HitEnemyHandler(this, new HitEnemyArgs(target.Id, projectileParams.Damage));
 
-            var explosion = PoolManager.GetObject<ParticleEffect>(explosionAssetPath);
+            var explosion = PoolManager.GetObject<ParticleEffect>(explosionAssetPath, factory);
             explosion.SetOrientation(target.transform.position, Quaternion.identity);
             explosion.Play();
         }
@@ -133,4 +138,6 @@ public class Projectile : PooledBattleElement
     {
         currentState.Update();
     }
+
+    public class Factory : PlaceholderFactory<string, Projectile> { }
 }

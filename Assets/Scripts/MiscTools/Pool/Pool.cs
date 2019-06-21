@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using Zenject;
 
 namespace Pool
 {
@@ -16,7 +17,7 @@ namespace Pool
             objects = new Queue<PoolObject>();
         }
 
-        public T GetObject<T>() where T : PoolObject
+        public T GetObject<T>(PlaceholderFactory<string, T> factory) where T : PoolObject
         {
             T obj;
 
@@ -26,7 +27,7 @@ namespace Pool
             }
             else
             {
-                obj = (T) Object.Instantiate(asset);
+                obj = (T) factory.Create(path);
                 obj.SetPoolKey(path);
             }
 

@@ -4,6 +4,7 @@ using Pool;
 using UnityEngine;
 using UnityEngine.AI;
 using VFX;
+using Zenject;
 
 public class EnemyArgs : EventArgs
 {
@@ -24,11 +25,13 @@ public enum EnemyType
 }
 
 // a bit overkill for now since both nested enemy classes are pretty much the same
-public abstract class EnemyController : PooledBattleElement
+public abstract class EnemyController : PoolObject
 {
     [SerializeField] protected EnemyParams enemyParams;
-    [SerializeField] protected ProjectileParams projectileParams;
     [SerializeField, AssetPathGetter] private string explosionAssetPath;
+    [Inject] private BattleController battleController;
+    [Inject] private EnemySpawnController enemySpawnController;
+    [Inject] private ParticleEffect.Factory factory;
     
     protected NavMeshAgent navMeshAgent;
 
@@ -47,6 +50,11 @@ public abstract class EnemyController : PooledBattleElement
     public static event EventHandler<EnemyArgs> EnemyInstantiated = delegate { };
 
     public static event EventHandler<EnemyArgs> EnemyDestroyed = delegate { };
+
+    private void Awake()
+    {
+        Initialize();
+    }
 
     private void OnTriggerEnter(Collider collider)
     {
@@ -84,23 +92,21 @@ public abstract class EnemyController : PooledBattleElement
 
         if (health <= 0)
         {
-            var explosion = PoolManager.GetObject<ParticleEffect>(explosionAssetPath);
+            var explosion = PoolManager.GetObject<ParticleEffect>(explosionAssetPath, factory);
             explosion.transform.position = transform.position;
             explosion.Play();
 
             ReturnObject();
             EnemyDestroyed(this, new EnemyArgs(Id, EnemyType));
-            BattleRoot.BattleController.BattleStats.CountFrag(EnemyType);
+            battleController.BattleStats.CountFrag(EnemyType);
         }
     }
 
-    protected override void Initialize()
+    protected void Initialize()
     {
-        base.Initialize();
-
         navMeshAgent = GetComponent<NavMeshAgent>();
         Id = BattleController.LastEnemyId + 1;
-        name = string.Format("{0}_{1}", VehicleName, Id);
+        name = $"{VehicleName}_{Id}";
         collider = GetComponent<Collider>();
   
         Projectile.HitEnemyColliderHandler += OnProjectileHitCollider;
@@ -122,7 +128,7 @@ public abstract class EnemyController : PooledBattleElement
 
     public void SetGoalDestination()
     {
-        navMeshAgent.Warp(BattleRoot.EnemySpawnController.GetSpawnPos());
+        navMeshAgent.Warp(enemySpawnController.GetSpawnPos());
         navMeshAgent.enabled = true;
         navMeshAgent.ResetPath();
         navMeshAgent.SetDestination(BattleController.GoalPosition);
@@ -152,4 +158,6 @@ public abstract class EnemyController : PooledBattleElement
     {
         Projectile.HitEnemyColliderHandler -= OnProjectileHitCollider;
     }
+
+    public class Factory : PlaceholderFactory<string, EnemyController> { }
 }

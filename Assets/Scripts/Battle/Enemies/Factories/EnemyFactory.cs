@@ -1,17 +1,19 @@
-﻿using Battle;
-using Pool;
+﻿using Pool;
 using UnityEngine;
+using Zenject;
 
-public abstract class EnemyFactory : BattleElement
+public class EnemyFactory : MonoBehaviour
 {
     [SerializeField, AssetPathGetter] protected string enemyAssetPath;
+    [Inject] private EnemyController.Factory factory;
 
-    public abstract EnemyController SpawnEnemy();
-
-    protected override void Initialize()
+    public EnemyController SpawnEnemy()
     {
-        base.Initialize();
+        return PoolManager.GetObject<EnemyController>(enemyAssetPath, factory);//   factory.Create(enemyAssetPath);
+    }
 
-        PoolManager.PreWarm<EnemyController>(enemyAssetPath, 20);
+    protected void Initialize()
+    {
+        PoolManager.PreWarm<EnemyController>(enemyAssetPath, 20, factory);
     }
 }

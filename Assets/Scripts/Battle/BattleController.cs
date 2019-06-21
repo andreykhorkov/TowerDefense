@@ -1,7 +1,7 @@
 ﻿using System;
-using Battle;
 using Pool;
 using UnityEngine;
+using Zenject;
 
 public class ClockTickArgs : EventArgs
 {
@@ -13,7 +13,7 @@ public class ClockTickArgs : EventArgs
     }
 }
 
-public class BattleController : BattleElement
+public class BattleController : MonoBehaviour
 {
     [SerializeField] private Transform goalPoint;
     [SerializeField] private float defaultEnemySpawnDelay = 5; 
@@ -101,22 +101,20 @@ public class BattleController : BattleElement
         EnemyController.EnemyInstantiated -= OnEnemyInstantiated;
     }
 
-    protected override void Initialize()
+    [Inject]
+    private void Initialize(EnemySpawnController enemySpawner, BattleStats battleStats)
     {
-        base.Initialize();
-
+        enemySpawnController = enemySpawner;
         GoalPosition = goalPoint.position;
-        enemySpawnController = BattleRoot.EnemySpawnController;
         SetPeriodicTasks();
         LastEnemyId = -1;
-        PooledPosition = PoolManager.Instance.transform.position;
+        PooledPosition = Vector3.right * 10000;
         EnemyController.EnemyInstantiated += OnEnemyInstantiated;
         LevelBoundsLayer = LayerMask.NameToLayer("LevelBounds");
         FinishLayer = LayerMask.NameToLayer("Finish");
         ProjectileLayer = LayerMask.NameToLayer("Projectile");
         PoolLayer = LayerMask.NameToLayer("Pool");
         EnemyLayer = LayerMask.NameToLayer("Enemy");
-
-        BattleStats = new BattleStats();
+        BattleStats = battleStats;
     }
 }

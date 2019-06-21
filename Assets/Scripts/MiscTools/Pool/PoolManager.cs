@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using Zenject;
 
 namespace Pool
 {
@@ -7,40 +8,32 @@ namespace Pool
     {
         private static Dictionary<string, Pool> pools;
 
-        public static PoolManager Instance { get; private set; }
-
         void Awake()
         {
             pools = new Dictionary<string, Pool>();
-            Instance = this;
         }
 
         void OnDestroy()
         {
             pools = null;
-            Instance = null;
         }
 
-        public static T GetObject<T>(string path) where T : PoolObject
+        public static T GetObject<T>(string path, PlaceholderFactory<string, T> factory) where T : PoolObject
         {
-            Pool pool;
-
-            if (!pools.TryGetValue(path, out pool))
+            if (!pools.TryGetValue(path, out var pool))
             {
                 pool = new Pool(path);
                 pools.Add(path, pool);
             }
 
-            var poolObj = pool.GetObject<T>();
+            var poolObj = pool.GetObject(factory);
 
             return poolObj;
         }
 
         public static void ReturnObject(PoolObject obj, string path)
         {
-            Pool pool;
-
-            if (!pools.TryGetValue(path, out pool))
+            if (!pools.TryGetValue(path, out var pool))
             {
                 Debug.LogErrorFormat("PoolManager: there is no pool at given path {0}", path);
                 return;
@@ -49,7 +42,7 @@ namespace Pool
             pool.ReturnObject(obj);
         }
 
-        public static void PreWarm<T>(string path, int objectCount) where T : PoolObject
+        public static void PreWarm<T>(string path, int objectCount, PlaceholderFactory<string, T> factory) where T : PoolObject
         {
             if (pools.ContainsKey(path))
             {
@@ -60,7 +53,7 @@ namespace Pool
 
             for (int i = 0; i < objectCount; i++)
             {
-                objects.Add(GetObject<T>(path));
+                objects.Add(GetObject(path, factory));
             }
 
             for (int i = 0; i < objectCount; i++)

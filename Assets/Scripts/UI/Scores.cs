@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Text;
-using Battle;
 using UnityEngine;
 using UnityEngine.UI;
+using Zenject;
 
-public class Scores : BattleElement
+public class Scores : MonoBehaviour
 {
     private const int SECONDS_IN_MIN = 60;
 
@@ -16,13 +16,12 @@ public class Scores : BattleElement
 
     private BattleStats battleStats;
 
-    protected override void Initialize()
+    [Inject]
+    protected void Initialize(BattleStats battleStats)
     {
-        base.Initialize();
-
         BattleStats.StatsChanged += OnStatsChanged;
         BattleController.ClockTick += OnClockTick;
-        battleStats = BattleRoot.BattleController.BattleStats;
+        this.battleStats = battleStats;
         battleStats.ResetStats();
     }
 

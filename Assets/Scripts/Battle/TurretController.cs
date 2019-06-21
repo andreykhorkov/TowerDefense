@@ -2,8 +2,9 @@
 using Battle;
 using Pool;
 using UnityEngine;
+using Zenject;
 
-public class TurretController : BattleElement
+public class TurretController : MonoBehaviour
 {
 
     [SerializeField] private Transform cannon;
@@ -19,6 +20,7 @@ public class TurretController : BattleElement
     [SerializeField] private Transform shootPoint;
     [SerializeField] private Transform towerBottom;
     [SerializeField] private ProjectileParams projectileParams;
+    [Inject] private Projectile.Factory factory;
 
     private EnemyController target;
     private BattleController battleController;
@@ -46,11 +48,10 @@ public class TurretController : BattleElement
         EnemyController.EnemyDestroyed -= OnEnemyDestroyed;
     }
 
-    protected override void Initialize()
+    [Inject]
+    private void Initialize(BattleController battleController)
     {
-        base.Initialize();
-
-        battleController = BattleRoot.BattleController;
+        this.battleController = battleController;
         levelHalfWidth = battleController.LevelMesh.mesh.bounds.size.x*battleController.LevelMesh.transform.lossyScale.x;
         enemyLayerMask |= 1 << LayerMask.NameToLayer("Enemy");
         towerBottomPosition = towerBottom.transform.position;
@@ -61,7 +62,7 @@ public class TurretController : BattleElement
 
     private void Fire()
     {
-        var projectile = PoolManager.GetObject<Projectile>(projectileAssetPath);
+        var projectile = PoolManager.GetObject<Projectile>(projectileAssetPath, factory);
         projectile.SetOrientation(shootPoint.position, shootPoint.rotation);
         projectile.SetTarget(target);
         projectile.Throw(targetDirection);
