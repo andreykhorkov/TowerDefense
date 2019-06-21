@@ -12,6 +12,7 @@ public class EnemyFactory : MonoBehaviour
         return PoolManager.GetObject<EnemyController>(enemyAssetPath, factory);//   factory.Create(enemyAssetPath);
     }
 
+    [Inject]
     protected void Initialize()
     {
         PoolManager.PreWarm<EnemyController>(enemyAssetPath, 20, factory);

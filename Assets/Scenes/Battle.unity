@@ -1282,6 +1282,7 @@ MonoBehaviour:
   enemySpawner: {fileID: 681499502}
   battleController: {fileID: 1627568530}
   turretController: {fileID: 1042301663}
+  poolManager: {fileID: 1023225969}
 --- !u!1 &408050649
 GameObject:
   m_ObjectHideFlags: 0

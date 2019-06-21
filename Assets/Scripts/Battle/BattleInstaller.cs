@@ -1,3 +1,4 @@
+using Pool;
 using UnityEngine;
 using VFX;
 using Zenject;
@@ -7,9 +8,11 @@ public class BattleInstaller : MonoInstaller
     [SerializeField] private EnemySpawnController enemySpawner;
     [SerializeField] private BattleController battleController;
     [SerializeField] private TurretController turretController;
+    [SerializeField] private PoolManager poolManager;
 
     public override void InstallBindings()
     {
+        Container.BindInstance(poolManager);
         Container.BindInstance(battleController);
         Container.BindInstance(enemySpawner);
         Container.BindInstance(turretController);

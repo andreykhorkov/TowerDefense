@@ -6,12 +6,7 @@ namespace Pool
 {
     public class PoolManager : MonoBehaviour
     {
-        private static Dictionary<string, Pool> pools;
-
-        void Awake()
-        {
-            pools = new Dictionary<string, Pool>();
-        }
+        private static Dictionary<string, Pool> pools = new Dictionary<string, Pool>();
 
         void OnDestroy()
         {
