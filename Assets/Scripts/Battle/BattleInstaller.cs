@@ -9,9 +9,11 @@ public class BattleInstaller : MonoInstaller
     [SerializeField] private BattleController battleController;
     [SerializeField] private TurretController turretController;
     [SerializeField] private PoolManager poolManager;
+    [SerializeField] private Transform goalPoint;
 
     public override void InstallBindings()
     {
+        Container.BindInstance(goalPoint);
         Container.BindInstance(poolManager);
         Container.BindInstance(battleController);
         Container.BindInstance(enemySpawner);

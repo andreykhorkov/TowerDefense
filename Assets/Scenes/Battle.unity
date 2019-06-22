@@ -1265,7 +1265,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &401818812
 MonoBehaviour:
@@ -1283,6 +1283,7 @@ MonoBehaviour:
   battleController: {fileID: 1627568530}
   turretController: {fileID: 1042301663}
   poolManager: {fileID: 1023225969}
+  goalPoint: {fileID: 1226198907}
 --- !u!1 &408050649
 GameObject:
   m_ObjectHideFlags: 0
@@ -2757,7 +2758,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &862387708
 GameObject:
@@ -3675,12 +3676,12 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1226198906}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 4, y: 2.8095703, z: 44.1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1296764732
 GameObject:
@@ -4185,7 +4186,7 @@ RectTransform:
   m_Children:
   - {fileID: 1878166180}
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -4743,7 +4744,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89f45e99d8a28da479785829dede3ac5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  goalPoint: {fileID: 1226198907}
   defaultEnemySpawnDelay: 2.5
   enemySpawnDelayDecreaseStep: 0.1
   enemySpeedIncreaseStep: 0.05

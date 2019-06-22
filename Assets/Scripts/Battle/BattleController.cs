@@ -1,5 +1,4 @@
 ﻿using System;
-using Pool;
 using UnityEngine;
 using Zenject;
 
@@ -15,7 +14,6 @@ public class ClockTickArgs : EventArgs
 
 public class BattleController : MonoBehaviour
 {
-    [SerializeField] private Transform goalPoint;
     [SerializeField] private float defaultEnemySpawnDelay = 5; 
     [SerializeField] private float enemySpawnDelayDecreaseStep = 0.1f;
     [SerializeField] private float enemySpeedIncreaseStep = 0.05f;
@@ -102,7 +100,7 @@ public class BattleController : MonoBehaviour
     }
 
     [Inject]
-    private void Initialize(EnemySpawnController enemySpawner, BattleStats battleStats)
+    private void Initialize(EnemySpawnController enemySpawner, BattleStats battleStats, Transform goalPoint)
     {
         enemySpawnController = enemySpawner;
         GoalPosition = goalPoint.position;
