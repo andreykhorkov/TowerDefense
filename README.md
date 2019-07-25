@@ -9,15 +9,15 @@ The Game:
 level.
   * There is 1 tower defense “Turret” asset next to the path near the center of the game
 level. It has the following attributes:
-  - It will fire on units within a 360 degree radius of itself.
-  - The targeting area distance should be definable (Default: No larger than 1/20th of
+      - It will fire on units within a 360 degree radius of itself.
+      - The targeting area distance should be definable (Default: No larger than 1/20th of
 the game play area.
-  - It will fire a single projectile at a target enemy who is the furthest along the path
+      - It will fire a single projectile at a target enemy who is the furthest along the path
 and within the targeting area.
-  - The turret will fire at a definable rate (Default: every 500ms)
-  - An enemy hit by the projectile will take a definable amount of damage (Default:
+      - The turret will fire at a definable rate (Default: every 500ms)
+      - An enemy hit by the projectile will take a definable amount of damage (Default:
 50). Enemies with no health remaining are destroyed.
-  - Projectiles always hit their target
+      - Projectiles always hit their target
   * Enemies will spawn and travel down a path past the turret. Enemies need to have a
 definable amount of health (Default: 100). If an enemy survives past the turret, it may be
 destroyed when it reaches the edge of the game level.
