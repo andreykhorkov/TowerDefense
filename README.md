@@ -7,6 +7,7 @@ is extensible, and accounts for building out the game’s framework cleanly in t
 The Game:
   ● When played, a camera will display 3D bird’s eye or isometric view of a single game
 level.
+
   ● There is 1 tower defense “Turret” asset next to the path near the center of the game
 level. It has the following attributes:
   ○ It will fire on units within a 360 degree radius of itself.
